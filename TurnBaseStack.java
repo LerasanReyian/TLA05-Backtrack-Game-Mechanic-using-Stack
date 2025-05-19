@@ -15,10 +15,13 @@ public class TurnBaseStack {
 
         int playerHp = 100;
         int botHp = 100;
-        int playerMxDMg = 100;
+        int playerMxDMg = 13;
         int playerMnDmg = 6;
         int botMxDmg = 10;
         int botMnDmg = 5;
+        int backtrackSteps = 2;
+
+        lastHp.push(botHp);
 
         while (true) {
              
@@ -43,15 +46,35 @@ public class TurnBaseStack {
             String in = sc.nextLine();//take text input
 
             if (in.equalsIgnoreCase("Hapaka")) {
+                
+                lastHp.push(botHp);
+
                 int Damage = playerMxDMg - random.nextInt(playerMnDmg);
                 System.out.println("you dealt " + Damage + " damage to the enemy");
                 botHp = botHp - Damage;
-                if (botHp < 0) {
-                    botHp = 0;
-                }
-                lastHp.push(botHp);
+                if (botHp < 0) botHp = 0;
                 System.out.println(" ");
 
+                
+                hitCount++;
+        
+                if (hitCount == 4) {
+                    if (lastHp.size() > backtrackSteps) {
+                        int rewoundHp = botHp;
+                        for (int i = 0; i < backtrackSteps; i++) {
+                            if (!lastHp.isEmpty()) {
+                                rewoundHp = lastHp.pop();
+                            }
+                        }
+                        int restored = rewoundHp - botHp;
+                        botHp = rewoundHp;
+                        System.out.println("-----------------------------Alert!---------------------------");
+                        System.out.println("Enemy's passive 'Backtrack' has been activated!\n");
+                        System.out.println("Enemy rewinds time and restores " + restored + " HP! (Restored to " + botHp + ")");
+                    }
+                    hitCount = 0;
+                }
+                
                 if (botHp <= 0) {
                     System.out.println("Monster has been slain after padol stike on him.\n");
                     System.out.println("The enemy has " + botHp + " HP remaining");
@@ -77,13 +100,7 @@ public class TurnBaseStack {
                     System.out.println("Player has been slain after barbeque stab in him. \n");
                     System.out.println("The player has " + playerHp + " HP remaining");
                   
-                    int passive = random.nextInt(4);
-                    if (lastHp.isEmpty() && passive == 0){
-                        int regian = lastHp.peek();
-                        System.out.println("Alert!\n");
-                        System.out.println("Enemies passive has been activated!\n");
-                        System.out.println("Enemy regained his health "+regian);
-                    }
+                  
                 }
 
             }
